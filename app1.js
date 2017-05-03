@@ -18,7 +18,7 @@ var boolLocal = false;
 passport.use(new Strategy({
   clientID: '4da3fc9817dc296aee71',
   clientSecret: '0ef3f4b8fe00806df1ef8f734e2a47332918830f',
-  callbackURL: 'https://proyecto-jilm-alu0100785265.c9users.io/login/github/return'
+  callbackURL: 'http://localhost:8089/login/github/return'
 }, function (accessToken, refreshToken, profile, cb) {
   var token = require('./token.json');
   var github = require('octonode');
@@ -36,14 +36,25 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 passport.use(new TwitterStrategy({
         consumerKey: 'llaoII8ao14jSMHrhHCHCVWeC',
         consumerSecret: 'hEYxgG3oxjDR0R1t9EWZ98tBKZ1IlVacHAQn5LDuvCIgzJbc9q',
-        callbackURL: "http://localhost:8080/login/twitter/return"
+        callbackURL: "http://10.6.128.170:8089/login/twitter/return"
     },
     function(token, tokenSecret, profile, done) 
     {
         done(null, profile);
     }
 ));
+var FacebookStrategy = require('passport-facebook').Strategy;
 
+passport.use(new FacebookStrategy({
+    clientID      : '1416333221758942',
+    clientSecret  : 'f5f30eca089742b5757af51489cea257',
+callbackURL : 'http://10.6.128.170:8089/login/facebook/return'
+},
+    function(token, tokenSecret, profile, done) 
+    {
+        done(null, profile);
+    }
+));
 
 
 function buscarNombre(usuario, password, cb) {
@@ -125,7 +136,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, 'views')));
-app.use(express.static(path.join(__dirname, 'gh-pages')));
+app.use(express.static(path.join(__dirname, '_book')));
 
 app.set('port', (process.env.PORT || 8080));
 
@@ -149,7 +160,7 @@ app.get('/', function (req, res) {
 
 app.get('/book', function (req, res) {
   if (req.user && (boolGithub || boolLocal))
-    res.sendfile('gh-pages/juanito.html');
+    res.sendfile('_book/ap.html');
   else if (req.user)
     res.render('error');
   else
@@ -195,6 +206,22 @@ app.get('/login', function (req, res) {
 app.get('/login/twitter', passport.authenticate('twitter'));
 
 app.get('/login/twitter/return', passport.authenticate('twitter', {
+  failureRedirect: '/login'
+}), function (req, res) {
+  res.redirect('/');
+});
+
+
+app.get('/login/github', passport.authenticate('github'));
+
+app.get('/login/github/return', passport.authenticate('github', {
+  failureRedirect: '/login'
+}), function (req, res) {
+  res.redirect('/');
+});
+app.get('/login/facebook', passport.authenticate('facebook'));
+
+app.get('/login/facebook/return', passport.authenticate('facebook', {
   failureRedirect: '/login'
 }), function (req, res) {
   res.redirect('/');
@@ -289,7 +316,7 @@ app.post('/cambiarpass', function (req, res) {
 
 
 // Crear puesto de escucha
-app.set('port', (process.env.PORT || 8080));
+app.set('port', (process.env.PORT || 8089));
 app.listen(app.get('port'), function() {
   console.log('Node app ejecutandose en el puerto', app.get('port'));
 });

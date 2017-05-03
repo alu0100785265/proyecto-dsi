@@ -29,6 +29,7 @@
     "jade": "*",
     "mongoose": "~3.8.8",
     "morgan": "^1.8.1",
+    "octonode": "^0.7.12",
     "passport": "~0.2.0",
     "passport-facebook": "~1.0.2",
     "passport-github": "^1.1.0",
