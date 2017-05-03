@@ -18,7 +18,7 @@ var boolLocal = false;
 passport.use(new Strategy({
   clientID: '4da3fc9817dc296aee71',
   clientSecret: '0ef3f4b8fe00806df1ef8f734e2a47332918830f',
-  callbackURL: 'https://babel-alu0100785265.c9users.io/login/github/return'
+  callbackURL: 'https://proyecto-jilm-alu0100785265.c9users.io/login/github/return'
 }, function (accessToken, refreshToken, profile, cb) {
   var token = require('./token.json');
   var github = require('octonode');
@@ -31,6 +31,19 @@ passport.use(new Strategy({
   });
   return cb(null, profile);
 }));
+var TwitterStrategy = require('passport-twitter').Strategy;
+
+passport.use(new TwitterStrategy({
+        consumerKey: 'llaoII8ao14jSMHrhHCHCVWeC',
+        consumerSecret: 'hEYxgG3oxjDR0R1t9EWZ98tBKZ1IlVacHAQn5LDuvCIgzJbc9q',
+        callbackURL: "http://localhost:8080/login/twitter/return"
+    },
+    function(token, tokenSecret, profile, done) 
+    {
+        done(null, profile);
+    }
+));
+
 
 
 function buscarNombre(usuario, password, cb) {
@@ -179,13 +192,19 @@ app.get('/login', function (req, res) {
   res.render('login');
 });
 
-app.get('/login/github', passport.authenticate('github'));
+app.get('/login/twitter', passport.authenticate('twitter'));
 
-app.get('/login/github/return', passport.authenticate('github', {
+app.get('/login/twitter/return', passport.authenticate('twitter', {
   failureRedirect: '/login'
 }), function (req, res) {
   res.redirect('/');
-});
+});/*
+app.get('/login/twitter', passport.authenticate('twitter'));
+app.get('/login/twitter/callback', passport.authenticate('twitter',
+  { successRedirect: '/', failureRedirect: '/login' }
+));
+
+*/
 
 app.post('/auth', passport.authenticate('local', {
   failureRedirect: "/login"
