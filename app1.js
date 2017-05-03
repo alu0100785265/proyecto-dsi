@@ -12,22 +12,28 @@ var fs = require('fs-extra');
 //var pck = require('../package.json');
 var boolGithub = false;
 var boolLocal = false;
-
+var boolTwitter =false;
+var boolFacebook = false;
 
 
 passport.use(new Strategy({
   clientID: '4da3fc9817dc296aee71',
   clientSecret: '0ef3f4b8fe00806df1ef8f734e2a47332918830f',
-  callbackURL: 'http://localhost:8089/login/github/return'
+  callbackURL: 'http://10.6.128.170:8089/login/github/return'
 }, function (accessToken, refreshToken, profile, cb) {
-  var token = require('./token.json');
+  var token = 'e536aa08811b1cd0a5acbf1718abd3dbeea9f0b5';
   var github = require('octonode');
-  var client = github.client(token.token);
+  var client = github.client(token);
   var ghorg = client.org('ULL-ESIT-DSI-1617');
   ghorg.member(profile.username, function (err, bool) {
-    //console.log(JSON.stringify(bool,null,4));
+    console.log(JSON.stringify(bool,null,4));
     boolGithub = bool;
+    console.log("q haces:"+boolGithub);
     if (err) console.log(err);
+  //  else{
+//	boolGithub = true;
+//	console.log("holaaa");
+//}
   });
   return cb(null, profile);
 }));
@@ -138,7 +144,7 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(path.join(__dirname, '_book')));
 
-app.set('port', (process.env.PORT || 8080));
+app.set('port', (process.env.PORT || 8089));
 
 app.set('view engine', 'ejs');
 
@@ -159,7 +165,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/book', function (req, res) {
-  if (req.user && (boolGithub || boolLocal))
+  if (req.user && (boolGithub || boolLocal || boolTwitter || boolFacebook))
     res.sendfile('_book/ap.html');
   else if (req.user)
     res.render('error');
@@ -209,6 +215,7 @@ app.get('/login/twitter/return', passport.authenticate('twitter', {
   failureRedirect: '/login'
 }), function (req, res) {
   res.redirect('/');
+  boolTwitter = true;
 });
 
 
@@ -225,6 +232,7 @@ app.get('/login/facebook/return', passport.authenticate('facebook', {
   failureRedirect: '/login'
 }), function (req, res) {
   res.redirect('/');
+  boolFacebook = true;
 });/*
 app.get('/login/twitter', passport.authenticate('twitter'));
 app.get('/login/twitter/callback', passport.authenticate('twitter',
